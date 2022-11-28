@@ -140,5 +140,4 @@ class ExecutionStep {
     }
 }
 
-Export-ModuleMember -Function New-ExecutionStep
-Export-ModuleMember -Function Invoke-ExecutionSteps
+Export-ModuleMember -Function New-ExecutionStep, Invoke-ExecutionSteps
