@@ -47,7 +47,7 @@ Describe 'Invoke-ExecutionSteps' {
             $(New-ExecutionStep 'test-2' { runner } $null { finalizer }),
             $(New-ExecutionStep 'test-3' { runner } $null { finalizer })
         )
-        $outp = Invoke-ExecutionSteps $steps
+        $outp = Invoke-ExecutionSteps $steps -Silent
         Should -Invoke runner -Exactly 3
         Should -Invoke runner -Exactly 3
         $outp.Succeeded.Count | Should -Be 3
@@ -56,11 +56,11 @@ Describe 'Invoke-ExecutionSteps' {
         $steps = @(
             $(New-ExecutionStep 'test-1' { runner } { cleaner } { finalizer }),
             $(New-ExecutionStep 'test-2' { runner } { cleaner } { finalizer }),
-            $(New-ExecutionStep 'test-3' { throw 'Custom error' } { cleaner } { finalizer })
+            $(New-ExecutionStep 'test-3' { runner; throw 'Custom error' } { cleaner } { finalizer })
             $(New-ExecutionStep 'test-4' { runner } { cleaner } { finalizer })
         )
-        $outp = Invoke-ExecutionSteps $steps
-        Should -Invoke runner -Exactly 2 # -Because 'the execution should stop when an error occurs'
+        $outp = Invoke-ExecutionSteps $steps -Silent
+        Should -Invoke runner -Exactly 3 # -Because 'the execution should stop when an error occurs'
         Should -Invoke cleaner -Exactly 3 # -Because 'all executed steps, including the failing one, should be cleaned up'
         Should -Invoke finalizer -Exactly 3 # -Because "all executed steps should have their finalizer ran, regardless of success"
         $outp.Succeeded.Count | Should -Be 2 # -Because 'the output should contain the correct succeeded steps'

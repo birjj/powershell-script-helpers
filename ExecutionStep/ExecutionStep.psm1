@@ -14,7 +14,8 @@ function New-ExecutionStep {
 }
 function Invoke-ExecutionSteps {
     param(
-        [Parameter(Mandatory = $true)] [ExecutionStep[]] $steps
+        [Parameter(Mandatory = $true)] [ExecutionStep[]] $steps,
+        [switch] $silent
     )
 
     $status = @{
@@ -26,6 +27,9 @@ function Invoke-ExecutionSteps {
     for ($i = 0; $i -lt $steps.Count; ++$i) {
         $step = $steps[$i]
         try {
+            if (-Not $silent.IsPresent) {
+                Write-Host -ForegroundColor DarkGray "Running $($step.Name)"
+            }
             $step.Run()
             $status.Succeeded.Add($step)
         }
@@ -33,23 +37,32 @@ function Invoke-ExecutionSteps {
             $err = $_
             $status.Errored = $step
             $status.Error = $err
-            Write-Host -ForegroundColor Red "An error occured during $($step.Name), aborting execution"
+            if (-Not $silent.IsPresent) {
+                Write-Host -ForegroundColor Red "An error occured during $($step.Name), aborting execution"
+            }
             # try to undo every previous step
             for ($j = $i; $j -ge 0; --$j) {
                 $prevStep = $steps[$j]
                 try {
+                    if (-Not $silent.IsPresent) {
+                        Write-Host -ForegroundColor DarkGray "Cleaning up $($prevStep.Name)"
+                    }
                     $prevStep.Cleanup()
                 }
                 catch {
                     Write-Error "${_}"
-                    Write-Host -ForegroundColor Red "!!! An error occured during cleanup of $($prevStep.Name). Manual cleanup may be needed. !!!"
+                    if (-Not $silent.IsPresent) {
+                        Write-Host -ForegroundColor Red "!!! An error occured during cleanup of $($prevStep.Name). Manual cleanup may be needed. !!!"
+                    }
                     break
                 }
             }
             # then summarize the result
-            Write-Host
-            Write-Host 
-            Write-Host -ForegroundColor Red $err
+            if (-Not $silent.IsPresent) {
+                Write-Host
+                Write-Host 
+                Write-Host -ForegroundColor Red $err
+            }
             break
         }
     }
@@ -58,16 +71,21 @@ function Invoke-ExecutionSteps {
         $prevStep = $steps[$j]
         if (-Not $prevStep) { continue }
         try {
+            if (-Not $silent.IsPresent) {
+                Write-Host -ForegroundColor DarkGray "Finalizing $($prevStep.Name)"
+            }
             $prevStep.Finally()
         }
         catch {
             Write-Error "${_}"
-            Write-Host -ForegroundColor Red "!!! An error occured during finalization of $($prevStep.Name). Manual cleanup may be needed. !!!"
+            if (-Not $silent.IsPresent) {
+                Write-Host -ForegroundColor Red "!!! An error occured during finalization of $($prevStep.Name). Manual cleanup may be needed. !!!"
+            }
             break
         }
     }
     
-    if (-Not $status.Error) {
+    if (-Not $status.Error -and -Not $silent.IsPresent) {
         Write-Host
         Write-Host
         Write-Host -ForegroundColor Green "The script was successfully executed"
@@ -104,7 +122,6 @@ class ExecutionStep {
     }
 
     Run() {
-        Write-Host -ForegroundColor DarkGray "Running $($this.Name)"
         Invoke-Command -ScriptBlock $this._Run
     }
 
@@ -112,7 +129,6 @@ class ExecutionStep {
         if ($null -eq $this._Cleanup) {
             return
         }
-        Write-Host -ForegroundColor DarkGray "Cleaning up $($this.Name)"
         Invoke-Command -ScriptBlock $this._Cleanup
     }
 
@@ -120,7 +136,6 @@ class ExecutionStep {
         if ($null -eq $this._Finally) {
             return
         }
-        Write-Host -ForegroundColor DarkGray "Finalizing $($this.Name)"
         Invoke-Command -ScriptBlock $this._Finally
     }
 }
