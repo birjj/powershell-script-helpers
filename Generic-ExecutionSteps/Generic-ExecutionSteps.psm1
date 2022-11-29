@@ -24,7 +24,7 @@ function New-PowerShellVersionCheck {
 # checks if the current git repo has a new tag on the remote
 function New-GitUpdateCheck {
     param(
-        [object] $scriptParams, # should be $PSBoundParameters from the script, used to re-run script
+        [Parameter(Mandatory = $true)][object] $scriptParams, # should be $PSBoundParameters from the script, used to re-run script
         [switch] $required # if present, throw an error if we aren't in a git repo - otherwise ignore it silently
     )
 
