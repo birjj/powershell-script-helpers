@@ -91,7 +91,7 @@ Describe 'New-GitUpdateCheck' {
             return "In git repo"
         } -ParameterFilter { $args[0] -eq 'rev-parse' } -ModuleName 'ExecutionSteps-Generic'
         Mock git { # remote tag mock
-            'From test`nabc        refs/tags/v1.0.0^{}'
+            'From test`nabc        refs/tags/v1.0.1^{}'
         } -ParameterFilter { $args[0] -eq 'ls-remote' } -ModuleName 'ExecutionSteps-Generic'
         Mock git { # local tag mock
             'v1.0.0'
