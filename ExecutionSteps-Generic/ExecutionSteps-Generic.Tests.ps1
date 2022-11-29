@@ -1,8 +1,8 @@
 BeforeAll {
-    Get-Module -Name Generic-ExecutionSteps | Remove-Module -Force
+    Get-Module -Name ExecutionSteps-Generic | Remove-Module -Force
     Get-Module -Name ExecutionStep | Remove-Module -Force
     Import-Module $(Join-Path $PSScriptRoot ..\ExecutionStep)
-    Import-Module $(Join-Path $PSScriptRoot .\Generic-ExecutionSteps)
+    Import-Module $(Join-Path $PSScriptRoot .\ExecutionSteps-Generic)
 }
 
 Describe 'New-PowerShellVersionCheck' {
