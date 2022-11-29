@@ -1,6 +1,6 @@
 BeforeAll {
-    Get-Module -Name ExecutionStep | Remove-Module -Force
-    Import-Module $(Join-Path $PSScriptRoot .\ExecutionStep)
+    Get-Module -Name ExecutionSteps | Remove-Module -Force
+    Import-Module $(Join-Path $PSScriptRoot .\ExecutionSteps)
 }
 
 Describe 'New-ExecutionStep' {
