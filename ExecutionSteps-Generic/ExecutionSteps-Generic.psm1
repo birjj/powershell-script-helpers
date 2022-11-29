@@ -44,7 +44,7 @@ function Test-GitPresence {
     $git = Get-Command "git" -ErrorAction Ignore
     return [bool]$git
 }
-function Prompt-ForChoice {
+function Get-UserChoice {
     param(
         [string]$caption,
         [string]$message,
@@ -71,7 +71,7 @@ function New-GitUpdateCheck {
     $getLocalGitTag = ${Function:Get-LocalGitTag}
     $testGitPresence = ${Function:Test-GitPresence}
     $testIsInGit = ${Function:Test-IsInGitRepo}
-    $promptForChoice = ${Function:Prompt-ForChoice}
+    $promptForChoice = ${Function:Get-UserChoice}
 
     $test = {
         $SCRIPT_PATH | Split-Path | Push-Location # make sure we execute commands from the scripts directory
