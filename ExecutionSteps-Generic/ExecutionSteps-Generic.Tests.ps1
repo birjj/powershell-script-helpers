@@ -1,7 +1,7 @@
 BeforeAll {
     Get-Module -Name ExecutionSteps-Generic | Remove-Module -Force
     Get-Module -Name ExecutionStep | Remove-Module -Force
-    Import-Module $(Join-Path $PSScriptRoot ..\ExecutionStep)
+    Import-Module $(Join-Path $PSScriptRoot ..\ExecutionSteps)
     Import-Module $(Join-Path $PSScriptRoot .\ExecutionSteps-Generic)
 }
 
@@ -55,5 +55,76 @@ Describe 'New-PowerShellVersionCheck' {
         { $step.Run() } | Should -Not -Throw
         $PSVersionTable.PSVersion = [System.Version]"6.0.0"
         { $step.Run() } | Should -Not -Throw
+    }
+}
+
+Describe 'New-GitUpdateCheck' {
+    It 'should react if git is not installed' {
+        Mock git {} -ModuleName 'ExecutionSteps-Generic'
+        Mock Get-Command {
+            return $null
+        } -ParameterFilter { $Name -eq 'git' } -ModuleName 'ExecutionSteps-Generic'
+
+        $step = New-GitUpdateCheck $PSBoundParameters
+        { $step.Run() 3>$null } | Should -Not -Throw # should just exit early, but not throw
+        $requiredStep = New-GitUpdateCheck $PSBoundParameters -required
+        { $requiredStep.Run() } | Should -Throw # if required, should throw
+        # make sure we didn't proceed to the point where we called a git command
+        Should -Invoke git -Times 0 -ModuleName 'ExecutionSteps-Generic' # -Because "Shouldn't check Git tags if Git isn't installed"
+    }
+
+    It 'should react if not in a git repo' {
+        Mock git {
+            throw "Not in git repo"
+        } -ParameterFilter { $args[0] -eq 'rev-parse' } -ModuleName 'ExecutionSteps-Generic'
+
+        $step = New-GitUpdateCheck $PSBoundParameters
+        { $step.Run() 3>$null } | Should -Not -Throw # should just exit early, but not throw
+        $requiredStep = New-GitUpdateCheck $PSBoundParameters -required
+        { $requiredStep.Run() } | Should -Throw # if required, should throw
+        # make sure we didn't proceed to the point where we called a git command
+        Should -Invoke git -Times 0 -ParameterFilter { $args[0] -eq 'describe' } -ModuleName 'ExecutionSteps-Generic' # -Because "Shouldn't check Git tags if Git isn't installed"
+    }
+
+    It 'should not ask for updates if versions match' {
+        Mock git {
+            return "In git repo"
+        } -ParameterFilter { $args[0] -eq 'rev-parse' } -ModuleName 'ExecutionSteps-Generic'
+        Mock git { # remote tag mock
+            'From test`nabc        refs/tags/v1.0.0^{}'
+        } -ParameterFilter { $args[0] -eq 'ls-remote' } -ModuleName 'ExecutionSteps-Generic'
+        Mock git { # local tag mock
+            'v1.0.0'
+        } -ParameterFilter { $args[0] -eq 'describe' } -ModuleName 'ExecutionSteps-Generic'
+        Mock Get-Host { # PromptForChoice mock
+            [pscustomobject] @{
+                UI = Add-Member -PassThru -Name PromptForChoice -InputObject ([pscustomobject] @{}) -Type ScriptMethod -Value { return 1 }
+            }
+        } -ModuleName 'ExecutionSteps-Generic'
+
+        $step = New-GitUpdateCheck $PSBoundParameters
+        $step.Run()
+        Should -Invoke Get-Host -Times 0 -ModuleName 'ExecutionSteps-Generic'
+    }
+
+    It "should ask for updates if versions don't match" {
+        Mock git {
+            return "In git repo"
+        } -ParameterFilter { $args[0] -eq 'rev-parse' } -ModuleName 'ExecutionSteps-Generic'
+        Mock git { # remote tag mock
+            'From test`nabc        refs/tags/v1.0.0^{}`ncba        refs/tags/v1.0.1^{}'
+        } -ParameterFilter { $args[0] -eq 'ls-remote' } -ModuleName 'ExecutionSteps-Generic'
+        Mock git { # local tag mock
+            'v1.0.0'
+        } -ParameterFilter { $args[0] -eq 'describe' } -ModuleName 'ExecutionSteps-Generic'
+        Mock Get-Host { # PromptForChoice mock
+            [pscustomobject] @{
+                UI = Add-Member -PassThru -Name PromptForChoice -InputObject ([pscustomobject] @{}) -Type ScriptMethod -Value { return 1 }
+            }
+        } -ModuleName 'ExecutionSteps-Generic'
+
+        $step = New-GitUpdateCheck $PSBoundParameters
+        $step.Run()
+        Should -Invoke Get-Host -Times 1 -ModuleName 'ExecutionSteps-Generic'
     }
 }

@@ -21,6 +21,39 @@ function New-PowerShellVersionCheck {
     return New-ExecutionStep "PowerShell version >= $version check" $test
 }
 
+function Get-RemoteGitTag {
+    $remoteTag = [string](git ls-remote --tags 2>$null | Select-Object -Last 1) -replace ".*/(.*)\^{}", "`$1"
+    if ([string]::IsNullOrWhiteSpace($remoteTag)) { $remoteTag = '[none]' }
+    return $remoteTag
+}
+function Get-LocalGitTag {
+    $localTag = git describe --tags --abbrev=0 2>$null
+    if ([string]::IsNullOrWhiteSpace($localTag)) { $localTag = '[none]' }
+    return $localTag
+}
+function Test-IsInGitRepo {
+    try {
+        git rev-parse --git-dir 2> $null > $null
+        return $?
+    }
+    catch {
+        return $false
+    }
+}
+function Test-GitPresence {
+    $git = Get-Command "git" -ErrorAction Ignore
+    return [bool]$git
+}
+function Prompt-ForChoice {
+    param(
+        [string]$caption,
+        [string]$message,
+        [string[]]$choices,
+        [int]$default
+    )
+    return (Get-Host).UI.PromptForChoice($caption, $message, $choices, $default)
+}
+
 # checks if the current git repo has a new tag on the remote
 function New-GitUpdateCheck {
     param(
@@ -31,52 +64,52 @@ function New-GitUpdateCheck {
     $SCRIPT_PATH = $MyInvocation.PSCommandPath
     $SCRIPT_PARAMS = $scriptParams
 
-    Write-Host -ForegroundColor Blue "Running in $SCRIPT_PATH with $SCRIPT_PARAMS"
-    Write-Host -ForegroundColor Blue $($SCRIPT_PARAMS | ConvertTo-Json)
+    # this is a bit of a hacky workaround for pester/Pester#2115
+    # we need to move functions to global scope so they can be mocked
+    # and then create references here so they're referenced inside .GetNewClosure()
+    $getRemoteGitTag = ${Function:Get-RemoteGitTag}
+    $getLocalGitTag = ${Function:Get-LocalGitTag}
+    $testGitPresence = ${Function:Test-GitPresence}
+    $testIsInGit = ${Function:Test-IsInGitRepo}
+    $promptForChoice = ${Function:Prompt-ForChoice}
 
     $test = {
         $SCRIPT_PATH | Split-Path | Push-Location # make sure we execute commands from the scripts directory
         try {
             # check if git is even installed
-            if (-Not (Get-Command "git" -ErrorAction Ignore)) {
+            if (-Not (Invoke-Command $testGitPresence)) {
+                $msg = "Git is required for script self-updating, but was not found."
                 if ($required.IsPresent) {
-                    throw "Git is required for script self-updating, but was not found."
-                    return
+                    throw $msg
                 }
                 else {
-                    Write-Warning "Git is required for script self-updating, but was not found. Self-updating will be skipped"
+                    Write-Warning "$msg Self-updating will be skipped"
                     return
                 }
             }
-
             # check if we're in a git repo
-            git rev-parse --git-dir 2> $null > $null
-            $isInGit = $?
-            if (-Not $isInGit) {
+            if (-Not (Invoke-Command $testIsInGit)) {
+                $msg = "Must be in a Git repository to self-update."
                 if ($required.IsPresent) {
-                    throw "Must be in a Git repository to self-update."
+                    throw $msg
                 }
                 else {
-                    Write-Warning "Must be in a Git repository to self-update. Self-updating will be skipped"
+                    Write-Warning "$msg Self-updating will be skipped"
                     return
                 }
             }
-
             # check if there are new tags on remote
-            $remoteTag = [string](git ls-remote --tags 2>$null | Select-Object -Last 1) -replace ".*/(.*)\^{}", "`$1"
-            if ([string]::IsNullOrWhiteSpace($removeTag)) { $remoteTag = '[none]' }
-            $localTag = git describe --tags --abbrev=0 2>$null
-            if ([string]::IsNullOrWhiteSpace($localTag)) { $localTag = '[none]' }
-
-            Write-Host -ForegroundColor Green "Comparing local $localTag to remote $remoteTag."
+            $remoteTag = Invoke-Command $getRemoteGitTag
+            $localTag = Invoke-Command $getLocalGitTag
 
             if ($localTag -ne $remoteTag) {
-                $shouldUpdate = $host.UI.PromptForChoice(
+                $shouldUpdate = Invoke-Command $promptForChoice -ArgumentList @(
                     "Should script be updated?",
                     "A new version $remoteTag of this script exists (local version is $localTag). Do you want to do a git pull now?`nThis will overwrite any uncommitted local changes you have.",
                     @("&Yes, update script", "&No, use current version"),
                     0
                 )
+                
                 if ($shouldUpdate -eq 0) {
                     git checkout -f master | Out-Host
                     git pull | Out-Host
