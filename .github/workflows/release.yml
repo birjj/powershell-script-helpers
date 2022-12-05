@@ -1,9 +1,9 @@
-name: Publish
+name: Publish to PSGallery
 on: workflow_dispatch
 
 jobs:
   publish:
-    name: Publish on PSGallery
+    name: Publish
     runs-on: windows-latest
     strategy:
       matrix:
@@ -11,10 +11,12 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
+      - name: Add repo to ModulePath
+        shell: pwsh
+        run: |
+          $env:PSModulePath = $env:PSModulePath+[IO.Path]::PathSeparator+$PWD
       - name: Run Publish-Module
         shell: pwsh
-        env:
-          NUGET_KEY: ${{ secrets.PS_GALLERY_API_KEY }}
         run: |
           cd ${{ matrix.package }}
-          Publish-Module -Path . -NuGetApiKey $env:NUGET_KEY
+          Publish-Module -Path . -NuGetApiKey ${{ secrets.PS_GALLERY_API_KEY }}
