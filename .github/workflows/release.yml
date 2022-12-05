@@ -4,7 +4,7 @@ on: workflow_dispatch
 jobs:
   publish:
     name: Publish on PSGallery
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     strategy:
       matrix:
         package: [ExecutionSteps, ExecutionSteps-Generic]
@@ -12,7 +12,9 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
       - name: Run Publish-Module
-        uses: pcgeek86/publish-powershell-module-action@v20
-        with:
-          ModulePath: ${{ matrix.package }}
-          NuGetApiKey: ${{ secrets.PS_GALLERY_API_KEY }}
+        shell: pwsh
+        env:
+          NUGET_KEY: ${{ secrets.PS_GALLERY_API_KEY }}
+        run: |
+          cd ${{ matrix.package }}
+          Publish-Module -Path . -NuGetApiKey $env:NUGET_KEY
