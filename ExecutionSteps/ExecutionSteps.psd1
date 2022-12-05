@@ -30,7 +30,7 @@
     Copyright         = '(c) KMD. All rights reserved.'
 
     # Description of the functionality provided by this module
-    # Description = ''
+    Description = 'Provides the ExecutionStep class, which allows execution of a script as a series of steps. If one step fails, previously executed steps may provide cleanup functions that will then be ran.'
 
     # Minimum version of the PowerShell engine required by this module
     # PowerShellVersion = ''
