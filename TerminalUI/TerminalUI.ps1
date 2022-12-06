@@ -19,6 +19,8 @@ function Get-UserChoice {
             return [ChoiceItem]::new($_)
         }
     }
+
+    # and setup rest of the state we use
     $selection = $items | ForEach-Object { $false }
     $cancelled = $false
     $active_line = 0
@@ -36,7 +38,7 @@ function Get-UserChoice {
         }
     }
 
-    
+    # run through our menu drawing loop
     try {
         [System.Console]::CursorVisible = $false
         # https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
@@ -50,14 +52,14 @@ function Get-UserChoice {
         $VK_Up = 0x26
 
         if (-Not $NoHelp) {
-            $help = '[↑↓] Move  [Enter] Submit'
+            $help = '[↑↓] Move'
             if ($Multi) {
-                $help = $help + '  [Space] Toggle'
+                $help += '  [Space] Toggle'
             }
-            $help += '  [Esc] Cancel'
+            $help += '  [Enter] Submit  [Esc] Cancel'
             Write-Host -ForegroundColor DarkGray $help
         }
-
+        
         while ($key -ne $VK_Return -and $key -ne $VK_Esc) {
             Write-Menu $active_line
             [System.Console]::SetCursorPosition(0, [System.Console]::CursorTop - $items.Length)
