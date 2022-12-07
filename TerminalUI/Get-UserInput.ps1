@@ -17,6 +17,7 @@ function Get-UserInput {
             return [UserInputSuggestion]::new([string] $_)
         }
     }
+    if ($suggestions -eq $null) { $suggestions = @() }
 
     $state = @{
         Input = ""
@@ -103,7 +104,7 @@ function Get-UserInput {
         $VK_Down = 0x28
         $VK_Up = 0x26
 
-        if (-Not $NoHelp) {
+        if ($suggestions.Length -and -Not $NoHelp) {
             $help = '[↑↓] Change suggestion  [Tab] Pick suggestion  [Enter] Submit  [Esc] Cancel'
             Write-Host -ForegroundColor DarkGray $help
         }
