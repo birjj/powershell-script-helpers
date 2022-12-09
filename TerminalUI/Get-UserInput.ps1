@@ -20,12 +20,12 @@ function Get-UserInput {
     if ($suggestions -eq $null) { $suggestions = @() }
 
     $state = @{
-        Input = ""
-        CursorIndex = 0
-        SuggestionIndex = 0
-        Suggestions = @()
+        Input                = ""
+        CursorIndex          = 0
+        SuggestionIndex      = 0
+        Suggestions          = @()
         LastSuggestionsCount = 0 # used to erase previous list of suggestions
-        Cancelled = $false
+        Cancelled            = $false
     }
 
     function Write-Prompt {
@@ -47,7 +47,7 @@ function Get-UserInput {
         [System.Console]::SetCursorPosition($promptLen + $state.CursorIndex, [System.Console]::CursorTop)
     }
 
-    # writes suggestions
+    # writes suggestions from the current line onwards
     function Write-Suggestions {
         # write out any suggestions
         for ($i = 0; $i -lt $state.Suggestions.Length; ++$i) {
@@ -58,14 +58,15 @@ function Get-UserInput {
             if ($i -eq 0) {
                 $text += 'Suggestions: '
                 $indent = 2
-            } else {
+            }
+            else {
                 $indent = 'Suggestions: > '.Length
             }
             if ($i -eq $state.SuggestionIndex) {
                 $indent = [math]::Max($indent - 2, 0)
                 $name = "> $name"
             }
-            $text += (" "*$indent) + $name
+            $text += (" " * $indent) + $name
             Write-Host -ForegroundColor $color $text
         }
         [System.Console]::SetCursorPosition(0, [System.Console]::CursorTop - $state.Suggestions.Length - 1)
@@ -98,7 +99,6 @@ function Get-UserInput {
         $VK_Home = 0x24
         $VK_Return = 0x0D
         $VK_Esc = 0x1B
-        $VK_Space = 0x20
         $VK_Left = 0x25
         $VK_Right = 0x27
         $VK_Down = 0x28
@@ -138,8 +138,10 @@ function Get-UserInput {
                     $state.CursorIndex = 0
                 }
                 $VK_Tab {
-                    $state.Input = $state.Suggestions[$state.SuggestionIndex].Name
-                    $state.CursorIndex = $state.Input.Length
+                    if ($state.Suggestions.Length) {
+                        $state.Input = $state.Suggestions[$state.SuggestionIndex].Name
+                        $state.CursorIndex = $state.Input.Length
+                    }
                 }
                 $VK_Backspace {
                     if ($state.CursorIndex -ne 0) {
