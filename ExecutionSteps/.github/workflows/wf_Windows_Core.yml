@@ -1,0 +1,23 @@
+name: Test on Windows
+on: [push, pull_request]
+jobs:
+  test:
+    name: Run Tests
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+      - name: Display the path
+        shell: pwsh
+        run: echo ${env:PATH}
+      - name: Display the version
+        shell: pwsh
+        run: $PSVersionTable
+      - name: Bootstrap
+        shell: pwsh
+        run: ./actions_bootstrap.ps1
+      - name: Test and Build
+        shell: pwsh
+        run: Invoke-Build -File .\src\ExecutionSteps.build.ps1

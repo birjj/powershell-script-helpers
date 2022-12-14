@@ -1,0 +1,29 @@
+name: Test on Windows (PS 5)
+on: [push, pull_request]
+jobs:
+  test:
+    name: Run Tests
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+      - name: Display the path
+        shell: powershell
+        run: echo ${env:PATH}
+      - name: Display the version
+        shell: powershell
+        run: $PSVersionTable
+      - name: NuGet Latest
+        shell: powershell
+        run: Install-PackageProvider -Name "NuGet" -Confirm:$false -Force -Verbose
+      - name: PowerShellGet Latest
+        shell: powershell
+        run: Install-Module -Name PowerShellGet -Repository PSGallery -Force
+      - name: Bootstrap
+        shell: powershell
+        run: ./actions_bootstrap.ps1
+      - name: Test and Build
+        shell: powershell
+        run: Invoke-Build -File .\src\ExecutionSteps.build.ps1

@@ -1,8 +1,32 @@
+<#
+.SYNOPSIS
+    Creates a new ExecutionStep instance using the given name and execution script block (and optionally cleanup script blocks)
+
+.DESCRIPTION
+    Creates a new ExecutionStep. An ExecutionStep represents a single step of a script execution, and can be executed using Invoke-ExecutionSteps.
+    An ExecutionStep consists of:
+    - A "run" scriptblock, which will be executed when the step should do its thing
+    - Optionally a "cleanup" scriptblock, which will be executed if a later step (or the step itself) throws an error
+    - Optionally a "finally" scriptblock, which will be executed when script execution ends, regardless of whether it succeeded
+    See Invoke-ExecutionSteps for more information
+
+.EXAMPLE
+    PS> $psVersionStep = New-ExecutionStep 'Check PowerShell version >= 7' {
+        # will stop execution of the script if the PowerShell version is < 7
+        if ($PSVersionTable.PSVersion -lt 7) {
+            throw "PowerShell 7 is required to run this script, current version is $($PSVersionTable.PSVersion)"
+        }
+    }
+#>
 function New-ExecutionStep {
     param(
+        # The human-readable name that represents this step
         [Parameter(Mandatory = $true)] [string] $name,
+        # The scriptblock that will be executed when the step should do its thing
         [Parameter(Mandatory = $true)] [scriptblock] $run,
+        # An optional scriptblock which will be executed if a later step (or the step itself) throws an error
         [Parameter(Mandatory = $false)] [scriptblock] $cleanup,
+        # An optional scriptblock which will be executed when script execution ends, regardless of whether it succeeded
         [Parameter(Mandatory = $false)] [scriptblock] $finally
     )
     [ExecutionStep]::new(
@@ -12,10 +36,38 @@ function New-ExecutionStep {
         $finally
     )
 }
+
+<#
+.SYNOPSIS
+    Executes a list of ExecutionSteps, outputting human-readable progress (unless asked to be silent)
+
+.DESCRIPTION
+    Executes a list of ExecutionSteps.
+    The "run" scriptblock of each ExecutionStep will be executed in order until one of them throws an error, or there are no more ExecutionSteps.
+
+    If an ExecutionStep throws an error, no further steps will be executed, and cleanup will instead commence.
+    This happens by executing the "cleanup" scriptblock of each step, in reverse order, starting from the step that threw an error.
+    If an error should occur during the cleanup stage, cleanup will end prematurely. Otherwise it will continue until all executed steps have been cleaned up.
+
+    Regardless of whether an error occured or not, the "finally" scriptblock of each executed step will be ran once every other stage is done.
+    This will happen in reverse order, just like "cleanup", and offers each step the opportunity to clean up any resources that should be removed even if execution succeeds.
+
+.OUTPUTS
+    System.Collections.Hashtable. Invoke-ExecutionSteps returns a hashtable indicating the final state of the execution.
+    This is of the format:
+    ```powershell
+    @{
+        Succeeded = @(...)  # list of all steps that succeeded
+        Errored = $null     # or the ExecutionStep that failed, if an error was thrown
+        Error = $null       # or the value that was thrown if an ExecutionStep failed
+    }
+    ```
+#>
 function Invoke-ExecutionSteps {
     param(
         [Parameter(Mandatory = $true)] [ExecutionStep[]] $steps,
-        [switch] $silent
+        [switch] $silent,
+        [switch] $resilient
     )
 
     $status = @{
@@ -74,7 +126,7 @@ function Invoke-ExecutionSteps {
             if (-Not $silent.IsPresent) {
                 Write-Host -ForegroundColor DarkGray "Finalizing $($prevStep.Name)"
             }
-            $prevStep.Finally()
+            $prevStep.Final()
         }
         catch {
             Write-Error "${_}"
@@ -89,6 +141,10 @@ function Invoke-ExecutionSteps {
         Write-Host
         Write-Host
         Write-Host -ForegroundColor Green "The script was successfully executed"
+    }
+
+    if ($status.Error -and -Not $resilient) {
+        throw $status.Error
     }
 
     return $status
@@ -122,21 +178,21 @@ class ExecutionStep {
     }
 
     Run() {
-        Invoke-Command -ScriptBlock $this._Run
+        & $this._Run
     }
 
     [void] Cleanup() {
         if ($null -eq $this._Cleanup) {
             return
         }
-        Invoke-Command -ScriptBlock $this._Cleanup
+        & $this._Cleanup
     }
 
-    [void] Finally() {
+    [void] Final() {
         if ($null -eq $this._Finally) {
             return
         }
-        Invoke-Command -ScriptBlock $this._Finally
+        & $this._Final
     }
 }
 
