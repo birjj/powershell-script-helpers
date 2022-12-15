@@ -24,6 +24,11 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v2
+      - name: Install and cache PowerShell modules
+        id: pscache
+        uses: potatoqualitee/psmodulecache@v5.1
+        with:
+          modules-to-cache: Pester, PSSCriptAnalyzer, InvokeBuild, platyPS
       - name: Display shell info
         run: |
           $esc = [char]27
