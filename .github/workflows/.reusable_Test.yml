@@ -5,34 +5,33 @@ on:
       module_name:
         required: true
         type: string
+      os:
+        required: true
+        type: string
+      shell:
+        required: false
+        type: string
+        default: "pwsh"
 
 jobs:
   test:
     name: Run Invoke-Build
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macOS-latest]
-        shell: [pwsh]
-        include:
-          - os: windows-latest
-            shell: powershell
-      fail-fast: false
+    runs-on: ${{ inputs.os }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v2
       - name: Display shell info
-        shell: ${{ matrix.shell }}
+        shell: ${{ inputs.shell }}
         run: |
           $esc = [char]27
           Write-Output "${esc}[90menv:PATH: ${esc}[0m${env:PATH}"
           Write-Output "${esc}[90mRunning on: ${esc}[34mPowerShell $($PSVersionTable.PSEdition) $($PSVersionTable.PSVersion)${esc}[0m ($($PSVersionTable.OS))"
           Write-Output "${esc}[90mTargetting: ${esc}[0m${{ inputs.module_name }}"
       - name: Bootstrap
-        shell: ${{ matrix.shell }}
+        shell: ${{ inputs.shell }}
         run: |
           Set-Location '${{ inputs.module_name }}'
           ./actions_bootstrap.ps1
       - name: Test and Build
-        shell: ${{ matrix.shell }}
+        shell: ${{ inputs.shell }}
         run: Invoke-Build -File .\src\ExecutionSteps.build.ps1
