@@ -354,7 +354,7 @@ Add-BuildTask CreateMarkdownHelp -After CreateHelpStart {
     $OutputDir | Get-ChildItem -File | ForEach-Object {
         # fix formatting in multiline examples
         $content = Get-Content $_.FullName -Raw
-        $newContent = $content -replace '(## EXAMPLE [^`]+?```\r\n[^`\r\n]+?\r\n)(```\r\n\r\n)([^#]+?\r\n)(\r\n)([^#]+)(#)', '$1$3$2$4$5$6'
+        $newContent = $content # -replace '(## EXAMPLE [^`]+?```\r\n[^`\r\n]+?\r\n)(```\r\n\r\n)([^#]+?\r\n)(\r\n)([^#]+)(#)', '$1$3$2$4$5$6'
         if ($newContent -ne $content) {
             Set-Content -Path $_.FullName -Value $newContent -Force
         }

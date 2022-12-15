@@ -28,7 +28,7 @@ jobs:
         id: pscache
         uses: potatoqualitee/psmodulecache@v5.1
         with:
-          modules-to-cache: Pester, PSSCriptAnalyzer, InvokeBuild, platyPS
+          modules-to-cache: Pester:5.3.3, PSSCriptAnalyzer:1.21.0, InvokeBuild:5.10.1, platyPS:0.12.0
       - name: Display shell info
         run: |
           $esc = [char]27
@@ -39,4 +39,4 @@ jobs:
       - name: Bootstrap
         run: ./actions_bootstrap.ps1
       - name: Test and Build
-        run: Invoke-Build -File .\src\ExecutionSteps.build.ps1
+        run: Invoke-Build -File .\src\${{ inputs.module_name }}.build.ps1
