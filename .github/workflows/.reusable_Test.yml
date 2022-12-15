@@ -37,6 +37,8 @@ jobs:
           Write-Output "${esc}[90mRunning on: ${esc}[34mPowerShell $($PSVersionTable.PSEdition) $($PSVersionTable.PSVersion)${esc}[0m ($($PSVersionTable.OS))"
           Write-Output "${esc}[90mTargetting: ${esc}[0m${{ inputs.module_name }}"
           Write-Output "${esc}[90mCurrent path: ${esc}[0m${PWD}"
+          Write-Output "${esc}[90mCurrent modules:${esc}[0m"
+          Write-Output (Get-Module | ForEach-Object { "  ${esc}[33m$($_.Name)${esc}[0m $($_.Version) ${esc}[90m[$($_.ModuleType)]${esc}[0m" })
       - name: Bootstrap
         run: ./actions_bootstrap.ps1
       - name: Test and Build
