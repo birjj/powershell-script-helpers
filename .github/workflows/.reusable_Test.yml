@@ -21,17 +21,17 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v2
       - name: Display shell info
-        shell: ${{ inputs.shell }}
+        shell: ${{ github.event.inputs.shell }}
         run: |
           $esc = [char]27
           Write-Output "${esc}[90menv:PATH: ${esc}[0m${env:PATH}"
           Write-Output "${esc}[90mRunning on: ${esc}[34mPowerShell $($PSVersionTable.PSEdition) $($PSVersionTable.PSVersion)${esc}[0m ($($PSVersionTable.OS))"
           Write-Output "${esc}[90mTargetting: ${esc}[0m${{ inputs.module_name }}"
       - name: Bootstrap
-        shell: ${{ inputs.shell }}
+        shell: ${{ github.event.inputs.shell }}
         run: |
           Set-Location '${{ inputs.module_name }}'
           ./actions_bootstrap.ps1
       - name: Test and Build
-        shell: ${{ inputs.shell }}
+        shell: ${{ github.event.inputs.shell }}
         run: Invoke-Build -File .\src\ExecutionSteps.build.ps1
