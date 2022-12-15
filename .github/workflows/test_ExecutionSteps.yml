@@ -1,0 +1,19 @@
+name: Test ExecutionSteps
+on:
+  push:
+    paths:
+      - ".github/workflows/test_ExecutionSteps.yml"
+      - ".github/workflows/.reusable_Test.yml"
+      - "ExecutionSteps/**"
+  pull_request:
+    paths:
+      - ".github/workflows/test_ExecutionSteps.yml"
+      - ".github/workflows/.reusable_Test.yml"
+      - "ExecutionSteps/**"
+
+jobs:
+  test:
+    name: Run Tests
+    uses: ./.github/workflows/.reusable_Test.yml
+    with:
+      module_name: ExecutionSteps
