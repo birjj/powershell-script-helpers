@@ -29,6 +29,7 @@ jobs:
         uses: potatoqualitee/psmodulecache@v5.1
         with:
           modules-to-cache: Pester:5.3.3, PSSCriptAnalyzer:1.21.0, InvokeBuild:5.10.1, platyPS:0.12.0
+          shell: ${{ inputs.shell }}
       - name: Display shell info
         run: |
           $esc = [char]27
