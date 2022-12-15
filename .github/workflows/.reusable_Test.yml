@@ -1,4 +1,4 @@
-name: Run tests
+name: "[Reusable] Run tests on module"
 on:
   workflow_call:
     inputs:
@@ -17,21 +17,21 @@ jobs:
   test:
     name: Run Invoke-Build
     runs-on: ${{ inputs.os }}
+    defaults:
+      run:
+        shell: ${{ inputs.shell }}
+        working-directory: ${{ inputs.module_name }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v2
       - name: Display shell info
-        shell: ${{ github.event.inputs.shell }}
         run: |
           $esc = [char]27
           Write-Output "${esc}[90menv:PATH: ${esc}[0m${env:PATH}"
           Write-Output "${esc}[90mRunning on: ${esc}[34mPowerShell $($PSVersionTable.PSEdition) $($PSVersionTable.PSVersion)${esc}[0m ($($PSVersionTable.OS))"
           Write-Output "${esc}[90mTargetting: ${esc}[0m${{ inputs.module_name }}"
+          Write-Output "${esc}[90mCurrent path: ${esc}[0m${PWD}"
       - name: Bootstrap
-        shell: ${{ github.event.inputs.shell }}
-        run: |
-          Set-Location '${{ inputs.module_name }}'
-          ./actions_bootstrap.ps1
+        run: ./actions_bootstrap.ps1
       - name: Test and Build
-        shell: ${{ github.event.inputs.shell }}
         run: Invoke-Build -File .\src\ExecutionSteps.build.ps1
