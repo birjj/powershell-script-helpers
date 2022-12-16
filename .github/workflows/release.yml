@@ -47,5 +47,7 @@ jobs:
           mkdir 'output'
           mkdir 'output\${{ inputs.module_name }}'
           mv '.\src\Artifacts\*' '.\output\${{ inputs.module_name }}'
+          rm -Recursive '.\output\${{ inputs.module_name }}\ccReport' -ErrorAction SilentlyContinue
+          rm -Recursive '.\output\${{ inputs.module_name }}\testOutput' -ErrorAction SilentlyContinue
           Write-Host "${esc}[90mPublishing ${esc}[0m${{ inputs.module_name }}${esc}[90m from ${esc}[0m${PWD}"
           Publish-Module -Path '.\output\${{ inputs.module_name }}' -NuGetApiKey '${{ secrets.PS_GALLERY_API_KEY }}' -Verbose
