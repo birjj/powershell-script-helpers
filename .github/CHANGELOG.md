@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - TBD
 
+## [0.0.2]
+
+- Move to a Catesta-based project structure, with appropriate testing and module help built-in
+
 ## [0.0.1]
 
 ### Added
