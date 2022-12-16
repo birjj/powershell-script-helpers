@@ -1,0 +1,46 @@
+name: Publish to PSGallery
+on:
+  workflow_dispatch:
+    inputs:
+      module_name:
+        required: true
+        type: "choice"
+        options:
+          - "ExecutionSteps"
+          - "ExecutionSteps-Generic"
+          - "TerminalUI"
+
+jobs:
+  test:
+    name: Publish
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: ${{ inputs.module_name }}
+        shell: pwsh
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+      - name: Install and cache PowerShell modules
+        id: pscache
+        uses: potatoqualitee/psmodulecache@v5.1
+        with:
+          modules-to-cache: Pester:5.3.3, PSSCriptAnalyzer:1.21.0, InvokeBuild:5.10.1, platyPS:0.12.0
+      - name: Display shell info
+        run: |
+          $esc = [char]27
+          Write-Output "${esc}[90menv:PATH: ${esc}[0m${env:PATH}"
+          Write-Output "${esc}[90mRunning on: ${esc}[34mPowerShell $($PSVersionTable.PSEdition) $($PSVersionTable.PSVersion)${esc}[0m ($($PSVersionTable.OS))"
+          Write-Output "${esc}[90mTargetting: ${esc}[0m${{ inputs.module_name }}"
+          Write-Output "${esc}[90mCurrent path: ${esc}[0m${PWD}"
+          Write-Output "${esc}[90mCurrent modules:${esc}[0m"
+          Write-Output (Get-Module | ForEach-Object { "  ${esc}[33m$($_.Name)${esc}[0m $($_.Version) ${esc}[90m[$($_.ModuleType)]${esc}[0m" })
+      - name: Bootstrap
+        run: ./actions_bootstrap.ps1
+      - name: Test and Build
+        run: Invoke-Build -File .\src\${{ inputs.module_name }}.build.ps1
+      - name: Run Publish-Module
+        run: |
+          $esc = [char]27
+          Write-Host "${esc}[90mAbout to publish ${esc}[0m${{ matrix.package }}${esc}[90m from ${esc}[0m$PWD"
+          Publish-Module -Path '.\src\Artifacts\${{ inputs.module_name }}.psd1' -NuGetApiKey '${{ secrets.PS_GALLERY_API_KEY }}' -Verbose

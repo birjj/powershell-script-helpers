@@ -31,7 +31,6 @@ See Invoke-ExecutionSteps for more information
 ### EXAMPLE 1
 ```
 $psVersionStep = New-ExecutionStep 'Check PowerShell version >= 7' {
-    # will stop execution of the script if the PowerShell version is < 7
     if ($PSVersionTable.PSVersion -lt 7) {
         throw "PowerShell 7 is required to run this script, current version is $($PSVersionTable.PSVersion)"
     }
