@@ -26,6 +26,7 @@ jobs:
         uses: potatoqualitee/psmodulecache@v5.1
         with:
           modules-to-cache: Pester:5.3.3, PSSCriptAnalyzer:1.21.0, InvokeBuild:5.10.1, platyPS:0.12.0
+          shell: pwsh
       - name: Display shell info
         run: |
           $esc = [char]27
@@ -42,5 +43,9 @@ jobs:
       - name: Run Publish-Module
         run: |
           $esc = [char]27
-          Write-Host "${esc}[90mAbout to publish ${esc}[0m${{ matrix.package }}${esc}[90m from ${esc}[0m$PWD"
-          Publish-Module -Path '.\src\Artifacts\${{ inputs.module_name }}.psd1' -NuGetApiKey '${{ secrets.PS_GALLERY_API_KEY }}' -Verbose
+          Write-Host "${esc}[90mMoving ${esc}[0m${{ inputs.module_name }}${esc}[90m to a publish-able directory${esc}[0m"
+          mkdir 'output'
+          mkdir 'output\${{ inputs.module_name }}'
+          mv '.\src\Artifacts\*' '.\output\${{ inputs.module_name }}'
+          Write-Host "${esc}[90mPublishing ${esc}[0m${{ inputs.module_name }}${esc}[90m from ${esc}[0m${PWD}"
+          Publish-Module -Path '.\output\${{ inputs.module_name }}' -NuGetApiKey '${{ secrets.PS_GALLERY_API_KEY }}' -Verbose
