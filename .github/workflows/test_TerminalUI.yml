@@ -1,0 +1,29 @@
+name: Test TerminalUI
+on:
+  push:
+    paths:
+      - ".github/workflows/test_TerminalUI.yml"
+      - ".github/workflows/.reusable_Test.yml"
+      - "TerminalUI/**"
+  pull_request:
+    paths:
+      - ".github/workflows/test_TerminalUI.yml"
+      - ".github/workflows/.reusable_Test.yml"
+      - "TerminalUI/**"
+
+jobs:
+  test:
+    name: Run Tests
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+        shell: [pwsh]
+        include:
+          - os: windows-latest
+            shell: powershell
+      fail-fast: false
+    uses: ./.github/workflows/.reusable_Test.yml
+    with:
+      module_name: TerminalUI
+      os: ${{ matrix.os }}
+      shell: ${{ matrix.shell }}
