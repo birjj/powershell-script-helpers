@@ -27,6 +27,11 @@ $MockableConsole = [System.Console]
 .PARAMETER NoHelp
     If set, don't show the user how to use the prompt (i.e. '[↑↓] Change suggestion  [Tab] Pick suggestion  [Enter] Submit  [Esc] Cancel').
     Only relevant if `-Suggestions` is set, as the help won't be shown without suggestions.
+.PARAMETER MaxSuggestions
+    The maximum number of suggestions to show at a time.
+.PARAMETER MaskInput
+    If set, replace the input with '*'. This is similar to -MaskInput for the built-in Read-Host.
+    The returned value will still be what the user entered.
 .OUTPUTS
     The string the user entered.
 #>

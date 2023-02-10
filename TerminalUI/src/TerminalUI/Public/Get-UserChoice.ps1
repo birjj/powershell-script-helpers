@@ -1,4 +1,4 @@
-$MockableHost = $Host
+﻿$MockableHost = $Host
 $MockableConsole = [System.Console]
 
 <#
@@ -18,10 +18,13 @@ $MockableConsole = [System.Console]
 .PARAMETER Items
     A list of options the user can pick from. The user will be shown these, and can choose one (or more, if -Multi is set).
     Items can be a list of strings, or a list of `[UserChoiceItem]` if you want more control over how they are presented to the user.
+.PARAMETER Multi
+    If set, users can pick more than one option. They must choose at least one. The return value will change to a list of the chosen values (or an empty list, if the user cancels)
 .PARAMETER NoHelp
     If set, don't show the user how to use the prompt (e.g. '[↑↓] Move  [Enter] Submit  [Esc] Cancel').
 .OUTPUTS
     The value the user picked, or a list of values if -Multi is set.
+    If the user cancels, `$null` will be returned (or `@()` if -Multi is set).
 #>
 function Get-UserChoice {
     param(
@@ -139,9 +142,7 @@ function Get-UserChoice {
         return $null
     } elseif ($Multi) {
         $i = 0
-        return @($Items
-            | Where-Object { $i++; return $Selection[$i - 1] }
-            | ForEach-Object { $_.Value })
+        return @($Items | Where-Object { $i++; return $Selection[$i - 1] } | ForEach-Object { $_.Value })
     } else {
         return $Items[$ActiveLine].Value
     }
