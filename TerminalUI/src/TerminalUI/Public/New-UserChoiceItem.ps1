@@ -23,7 +23,7 @@
 #>
 function New-UserChoiceItem {
     param(
-        [Parameter(Mandatory = $true)][string] $Value,
+        [Parameter(Mandatory = $true)][object] $Value,
         [Parameter(Mandatory = $false)][string] $Display = $Value
     )
 
@@ -31,9 +31,9 @@ function New-UserChoiceItem {
 }
 
 class UserChoiceItem {
-    [string] $Value
+    [object] $Value
     [string] $Display
-    UserChoiceItem([string] $Value, [string] $Display) {
+    UserChoiceItem([object] $Value, [string] $Display) {
         $this.Value = $Value
         $this.Display = $Display
     }

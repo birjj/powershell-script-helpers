@@ -17,19 +17,19 @@ InModuleScope 'TerminalUI' {
                 [object[]] $Keys = @($VK_Esc)
             )
 
-            [System.Collections.Generic.List[System.Object]]$KeyObjects = $Keys | ForEach-Object {
-                $Code = 0x00
-                $Char = '\u0000'
-                if ($_.GetType().Name -eq 'String') {
-                    $Char = $_
-                } else {
-                    $Code = $_
-                }
-                return [PSCustomObject]@{
-                    VirtualKeyCode = $Code
-                    Character      = $Char
-                }
-            }
+            [System.Collections.Generic.List[System.Object]]$KeyObjects = @($Keys | ForEach-Object {
+                    $Code = 0x00
+                    $Char = '\u0000'
+                    if ($_.GetType().Name -eq 'String') {
+                        $Char = $_
+                    } else {
+                        $Code = $_
+                    }
+                    return [PSCustomObject]@{
+                        VirtualKeyCode = $Code
+                        Character      = $Char
+                    }
+                })
 
             $script:MockableHost = @{
                 UI = @{

@@ -14,7 +14,7 @@ Should only be used if you need to display something other than the value the it
 ## SYNTAX
 
 ```
-New-UserChoiceItem [-Value] <String> [[-Display] <String>] [<CommonParameters>]
+New-UserChoiceItem [-Value] <Object> [[-Display] <String>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -48,7 +48,7 @@ Get-UserInput @(New-UserChoiceItem 'Foo' 'Metasyntactic variable')
 The value to return when the item is chosen.
 
 ```yaml
-Type: String
+Type: Object
 Parameter Sets: (All)
 Aliases:
 
