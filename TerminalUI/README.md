@@ -9,7 +9,7 @@ The following is currently implemented:
 Allows the user to enter an arbitrary text input, but supports suggestions. Useful for cases where you want to give the user multiple options to choose from, but also the ability to enter new values.
 
 Can be used as a replacement for the built-in `Read-Host`, and supports the same options (except for `-AsSecureString`).  
-See [the docs page](TerminalUI/docs/Get-UserInput.md) for details.
+See [the docs page](docs/Get-UserInput.md) for details.
 
 <div align="center">
 
@@ -22,7 +22,7 @@ See [the docs page](TerminalUI/docs/Get-UserInput.md) for details.
 Asks the user to pick one (or more) of the available options.
 
 Can be used as a replacement for the built-in `$Host.UI.PromptForChoice` (although it currently does not support all of the same options).  
-See [the docs page](TerminalUI/docs/Get-UserChoice.md) for details.
+See [the docs page](docs/Get-UserChoice.md) for details.
 
 <div align="center">
   
