@@ -34,8 +34,8 @@ InModuleScope 'TerminalUI' {
             $script:MockableHost = @{
                 UI = @{
                     RawUI = New-Object PSObject | Add-Member -MemberType ScriptMethod -Name 'ReadKey' -Value {
-                        if (-not $KeyObjects.Length) {
-                            throw "Mocked ReadKey was called after every mocked key ($($Keys | ConvertTo-Json -Compress)) was used"
+                        if (-not $KeyObjects.Count) {
+                            throw "Mocked ReadKey was called after every mocked key ($($Keys | ConvertTo-Json -Compress)) was used."
                         }
                         $Key, $Rest = $KeyObjects
                         $KeyObjects.RemoveAt(0)
