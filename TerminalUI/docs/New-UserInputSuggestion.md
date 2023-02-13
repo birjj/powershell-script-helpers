@@ -27,19 +27,19 @@ In those cases you can create a suggestion using New-UserInputSuggestion that ha
 ### EXAMPLE 1
 ```
 Get-UserInput -Suggestions @(New-UserInputSuggestion 'Foo')
-# will display the suggestion as 'Foo', when chosen will enter 'Foo'
+$ Will display the suggestion as 'Foo', when chosen will enter 'Foo'
 ```
 
 ### EXAMPLE 2
 ```
 Get-UserInput -Suggestions @(New-UserInputSuggestion -Value 'Foo' -Display 'Metasyntactic variable')
-# will display the suggestion as 'Metasyntactic variable', when chosen will enter 'Foo'
+$ Will display the suggestion as 'Metasyntactic variable', when chosen will enter 'Foo'
 ```
 
 ### EXAMPLE 3
 ```
 Get-UserInput -Suggestions @(New-UserInputSuggestion 'Foo' 'Metasyntactic variable')
-# will display the suggestion as 'Metasyntactic variable', when chosen will enter 'Foo'
+$ Will display the suggestion as 'Metasyntactic variable', when chosen will enter 'Foo'
 ```
 
 ## PARAMETERS

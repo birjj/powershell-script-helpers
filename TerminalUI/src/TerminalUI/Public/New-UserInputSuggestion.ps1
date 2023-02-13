@@ -7,13 +7,13 @@
     In those cases you can create a suggestion using New-UserInputSuggestion that has a display string and a value.
 .EXAMPLE
     C:\PS> Get-UserInput -Suggestions @(New-UserInputSuggestion 'Foo')
-    # will display the suggestion as 'Foo', when chosen will enter 'Foo'
+    $ Will display the suggestion as 'Foo', when chosen will enter 'Foo'
 .EXAMPLE
     C:\PS> Get-UserInput -Suggestions @(New-UserInputSuggestion -Value 'Foo' -Display 'Metasyntactic variable')
-    # will display the suggestion as 'Metasyntactic variable', when chosen will enter 'Foo'
+    $ Will display the suggestion as 'Metasyntactic variable', when chosen will enter 'Foo'
 .EXAMPLE
     C:\PS> Get-UserInput -Suggestions @(New-UserInputSuggestion 'Foo' 'Metasyntactic variable')
-    # will display the suggestion as 'Metasyntactic variable', when chosen will enter 'Foo'
+    $ Will display the suggestion as 'Metasyntactic variable', when chosen will enter 'Foo'
 .PARAMETER Value
     The value to enter when the suggestion is chosen.
 .PARAMETER Display

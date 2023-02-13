@@ -27,19 +27,19 @@ In those cases you can create an item using New-UserChoiceItem that has a displa
 ### EXAMPLE 1
 ```
 Get-UserChoice @(New-UserChoiceItem 'Foo')
-# will display the item as 'Foo', when chosen will return 'Foo'
+$ Will display the item as 'Foo', when chosen will return 'Foo'
 ```
 
 ### EXAMPLE 2
 ```
 Get-UserChoice @(New-UserChoiceItem -Value 'Foo' -Display 'Metasyntactic variable')
-# will display the item as 'Metasyntactic variable', when chosen will enter 'Foo'
+$ Will display the item as 'Metasyntactic variable', when chosen will enter 'Foo'
 ```
 
 ### EXAMPLE 3
 ```
 Get-UserInput @(New-UserChoiceItem 'Foo' 'Metasyntactic variable')
-# will display the item as 'Metasyntactic variable', when chosen will enter 'Foo'
+$ Will display the item as 'Metasyntactic variable', when chosen will enter 'Foo'
 ```
 
 ## PARAMETERS

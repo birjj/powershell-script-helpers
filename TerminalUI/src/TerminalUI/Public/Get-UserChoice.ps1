@@ -9,12 +9,12 @@ $MockableConsole = [System.Console]
     Similar to $Host.UI.PromptForChoice, but with a different UI and more options.
 .EXAMPLE
     C:\PS> Get-UserChoice 'Foo','Bar','Baz'
-    # user is shown a list of options ('Foo', 'Bar' and 'Baz'), of which they can pick one
-    # return value will be the one they choose
+    $ User is shown a list of options ('Foo', 'Bar' and 'Baz'), of which they can pick one
+    $ Return value will be the one they choose
 .EXAMPLE
     C:\PS> Get-UserChoice 'Foo','Bar','Baz' -Multi
-    # user is shown a list of options ('Foo', 'Bar' and 'Baz'), of which they can pick multiple
-    # return value will be a list of the ones they choose
+    $ User is shown a list of options ('Foo', 'Bar' and 'Baz'), of which they can pick multiple
+    $ Return value will be a list of the ones they choose
 .PARAMETER Items
     A list of options the user can pick from. The user will be shown these, and can choose one (or more, if -Multi is set).
     Items can be a list of strings, or a list of `[UserChoiceItem]` if you want more control over how they are presented to the user.

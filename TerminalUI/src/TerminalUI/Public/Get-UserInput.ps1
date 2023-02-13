@@ -9,16 +9,16 @@ $MockableConsole = [System.Console]
     Supports all parameters from the built-in Read-Host (except -AsSecureString), as well as suggestions.
 .EXAMPLE
     C:\PS> Get-UserInput
-    # user is shown an empty line. Whatever they write will be returned after they press enter
+    $ User is shown an empty line. Whatever they write will be returned after they press enter
 .EXAMPLE
     C:\PS> Get-UserInput -Prompt 'Test'
-    # user is shown a line containing 'Test: '. Whatever they write will be returned after they press enter
+    $ User is shown a line containing 'Test: '. Whatever they write will be returned after they press enter
 .EXAMPLE
     C:\PS> Get-UserInput -Prompt 'Password' -MaskInput
-    # Whatever the user writes will be shown as a list of '*'. The returned value will be what the user entered
+    $ Whatever the user writes will be shown as a list of '*'. The returned value will be what the user entered
 .EXAMPLE
     C:\PS> Get-UserInput -Prompt 'Choose a color' -Suggestions 'Blue','Red','Green'
-    # The user is free to write whatever they want, but will be shown suggestions as they type
+    $ The user is free to write whatever they want, but will be shown suggestions as they type
 .PARAMETER Prompt
     An optional text for the prompt. The function appends a colon (`:`) to the text you enter, and displays it in bold to differentiate it from the users input.
 .PARAMETER Suggestions

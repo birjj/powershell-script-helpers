@@ -7,13 +7,13 @@
     In those cases you can create an item using New-UserChoiceItem that has a display string and a value.
 .EXAMPLE
     C:\PS> Get-UserChoice @(New-UserChoiceItem 'Foo')
-    # will display the item as 'Foo', when chosen will return 'Foo'
+    $ Will display the item as 'Foo', when chosen will return 'Foo'
 .EXAMPLE
     C:\PS> Get-UserChoice @(New-UserChoiceItem -Value 'Foo' -Display 'Metasyntactic variable')
-    # will display the item as 'Metasyntactic variable', when chosen will enter 'Foo'
+    $ Will display the item as 'Metasyntactic variable', when chosen will enter 'Foo'
 .EXAMPLE
     C:\PS> Get-UserInput @(New-UserChoiceItem 'Foo' 'Metasyntactic variable')
-    # will display the item as 'Metasyntactic variable', when chosen will enter 'Foo'
+    $ Will display the item as 'Metasyntactic variable', when chosen will enter 'Foo'
 .PARAMETER Value
     The value to return when the item is chosen.
 .PARAMETER Display

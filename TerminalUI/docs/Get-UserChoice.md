@@ -26,15 +26,15 @@ Similar to $Host.UI.PromptForChoice, but with a different UI and more options.
 ### EXAMPLE 1
 ```
 Get-UserChoice 'Foo','Bar','Baz'
-# user is shown a list of options ('Foo', 'Bar' and 'Baz'), of which they can pick one
-# return value will be the one they choose
+$ User is shown a list of options ('Foo', 'Bar' and 'Baz'), of which they can pick one
+$ Return value will be the one they choose
 ```
 
 ### EXAMPLE 2
 ```
 Get-UserChoice 'Foo','Bar','Baz' -Multi
-# user is shown a list of options ('Foo', 'Bar' and 'Baz'), of which they can pick multiple
-# return value will be a list of the ones they choose
+$ User is shown a list of options ('Foo', 'Bar' and 'Baz'), of which they can pick multiple
+$ Return value will be a list of the ones they choose
 ```
 
 ## PARAMETERS
