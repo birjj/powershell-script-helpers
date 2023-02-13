@@ -13,7 +13,7 @@ See [the docs page](docs/Get-UserInput.md) for details.
 
 <div align="center">
 
-![Screenshot of Get-UserInput being called](https://user-images.githubusercontent.com/4542461/218481009-3e1473c9-5e46-4472-90b0-b0f3f762698c.png)
+[![Screenshot of Get-UserInput being called](https://user-images.githubusercontent.com/4542461/218481009-3e1473c9-5e46-4472-90b0-b0f3f762698c.png)](https://asciinema.org/a/559512)
   
 </div>
 
@@ -26,6 +26,6 @@ See [the docs page](docs/Get-UserChoice.md) for details.
 
 <div align="center">
   
-![Screenshot of Get-UserChoice being called](https://user-images.githubusercontent.com/4542461/218476951-09afc950-5333-4c08-99cc-dcfae343b65b.png)
+[![Screenshot of Get-UserChoice being called](https://user-images.githubusercontent.com/4542461/218476951-09afc950-5333-4c08-99cc-dcfae343b65b.png)](https://asciinema.org/a/lIJcI64CmcxEBCAZFoNvnuOFJ)
 
 </div>
